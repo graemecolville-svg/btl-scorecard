@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTL Structural Performance Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --bg: #080d18;
+    --bg-card: #0f1824;
+    --bg-elevated: #141e2e;
+    --red: #e05555;
+    --amber: #f5a623;
+    --teal: #2a9d8f;
+    --off-white: #f4f2ee;
+    --muted: #6b7a8d;
+    --border: rgba(255,255,255,0.07);
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { background: #080d18; color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--off-white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  .scorecard-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* HEADER */
+  .sc-header {
+    margin-bottom: 48px;
+  }
+  .sc-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sc-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--teal);
+  }
+  .sc-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--off-white);
+    margin-bottom: 20px;
+  }
+  .sc-title span { color: var(--red); }
+  .sc-subtitle {
+    color: var(--off-white);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .sc-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .sc-meta-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .sc-meta-item strong {
+    color: var(--off-white);
+    font-weight: 500;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    margin-bottom: 40px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--amber));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .section-label.loop1 { background: rgba(224,85,85,0.12); color: var(--red); border-left: 2px solid var(--red); }
+  .section-label.loop2 { background: rgba(245,166,35,0.12); color: var(--amber); border-left: 2px solid var(--amber); }
+  .section-label.loop3 { background: rgba(42,157,143,0.12); color: var(--teal); border-left: 2px solid var(--teal); }
+
+  /* QUESTION BLOCK */
+  .question-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .question-block:hover { border-color: rgba(255,255,255,0.12); }
+
+  .question-number {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(244,242,238,0.55);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--off-white);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  /* OPTIONS */
+  .options-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    width: 100%;
+    color: var(--off-white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .option-btn:hover {
+    border-color: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.04);
+  }
+  .option-btn.selected {
+    border-color: var(--teal);
+    background: rgba(42,157,143,0.08);
+  }
+  .option-btn.selected .opt-marker {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--bg);
+  }
+  .opt-marker {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    margin-top: 1px;
+    transition: all 0.15s;
+  }
+  .opt-score-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: auto;
+    padding-left: 12px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* NAV BUTTONS */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 12px;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 28px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: white;
+  }
+  .btn-primary:hover { background: #c94040; }
+  .btn-primary:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.5; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--off-white); border-color: rgba(255,255,255,0.2); }
+
+  /* ── RESULTS ── */
+  .results-wrap { display: none; }
+  .results-wrap.visible { display: block; }
+
+  .results-header {
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .results-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--teal);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .results-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--teal); }
+
+  .dominant-loop {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 44px);
+    line-height: 1;
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
+  }
+  .dominant-loop .loop-name { color: var(--red); }
+  .dominant-diagnosis {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--off-white);
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+  .mechanism-box {
+    background: var(--bg-card);
+    border-left: 3px solid var(--red);
+    padding: 20px 24px;
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 8px;
+  }
+  .mechanism-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .mechanism-text {
+    font-size: 14px;
+    color: var(--off-white);
+    line-height: 1.65;
+  }
+
+  /* SCORE BARS */
+  .score-bars {
+    margin: 36px 0;
+  }
+  .score-bars-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .score-bar-row {
+    margin-bottom: 20px;
+  }
+  .score-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .score-bar-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--off-white);
+  }
+  .score-bar-label small {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 11px;
+    margin-left: 6px;
+  }
+  .score-bar-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .score-bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 0%;
+  }
+  .score-bar-fill.loop1 { background: linear-gradient(90deg, #a03030, var(--red)); }
+  .score-bar-fill.loop2 { background: linear-gradient(90deg, #b07010, var(--amber)); }
+  .score-bar-fill.loop3 { background: linear-gradient(90deg, #1a6b60, var(--teal)); }
+  .risk-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-left: 8px;
+  }
+  .risk-high { background: rgba(224,85,85,0.15); color: var(--red); }
+  .risk-mid { background: rgba(245,166,35,0.15); color: var(--amber); }
+  .risk-low { background: rgba(42,157,143,0.15); color: var(--teal); }
+
+  /* WHAT THIS MEANS */
+  .findings-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin: 32px 0;
+  }
+  .findings-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0.03em;
+    margin-bottom: 20px;
+    color: var(--off-white);
+  }
+  .finding-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .finding-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .finding-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(224,85,85,0.12);
+    border: 1px solid rgba(224,85,85,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .finding-text { font-size: 14px; color: var(--off-white); line-height: 1.6; }
+  .finding-text strong { color: var(--off-white); font-weight: 500; }
+
+  /* GAP BOX */
+  .gap-box {
+    background: rgba(224,85,85,0.06);
+    border: 1px solid rgba(224,85,85,0.2);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin: 28px 0;
+  }
+  .gap-box-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+  .gap-box-text {
+    font-size: 14px;
+    color: var(--off-white);
+    line-height: 1.7;
+  }
+
+  /* EMAIL CAPTURE */
+  .email-section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px 28px;
+    margin: 32px 0;
+  }
+  .email-section-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    letter-spacing: 0.03em;
+    margin-bottom: 8px;
+  }
+  .email-section-sub {
+    font-size: 14px;
+    color: rgba(244,242,238,0.75);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .email-optional-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid rgba(42,157,143,0.3);
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .email-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .email-input-wrap { flex: 1; min-width: 220px; }
+  .email-input-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .email-input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    color: var(--off-white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .email-input:focus { border-color: rgba(42,157,143,0.5); }
+  .email-input::placeholder { color: var(--muted); }
+  .btn-send {
+    align-self: flex-end;
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-send:hover { background: #228070; }
+  .btn-send:disabled { background: var(--muted); cursor: not-allowed; }
+  .email-skip {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .email-skip a {
+    color: var(--muted);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 12px;
+    padding: 0;
+    font-family: var(--font-body);
+  }
+  .email-skip a:hover { color: var(--off-white); }
+  .email-sent-msg {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(42,157,143,0.1);
+    border: 1px solid rgba(42,157,143,0.25);
+    border-radius: 3px;
+    font-size: 14px;
+    color: var(--teal);
+  }
+  .email-sent-msg.visible { display: flex; }
+
+  /* CTA SECTION */
+  .cta-section {
+    margin-top: 40px;
+    padding-top: 36px;
+    border-top: 1px solid var(--border);
+  }
+  .cta-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .cta-headline {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    line-height: 1.05;
+  }
+  .cta-body {
+    font-size: 14px;
+    color: var(--off-white);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    max-width: 560px;
+  }
+  .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-cta-primary {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+  }
+  .btn-cta-primary:hover { background: #c94040; }
+  .btn-cta-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 14px 28px;
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.15s;
+  }
+  .btn-cta-secondary:hover { color: var(--off-white); border-color: rgba(255,255,255,0.2); }
+
+  /* RESULTS DETAIL - locked section */
+  .results-detail { margin-top: 0; }
+  .results-detail.hidden { display: none; }
+  .results-detail.unlocking {
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  /* EMAIL GATE */
+  .email-gate {
+    background: var(--bg-elevated);
+    border: 1px solid rgba(42,157,143,0.3);
+    border-radius: 4px;
+    padding: 36px 32px;
+    margin: 36px 0;
+    position: relative;
+  }
+  .email-gate::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--amber));
+    border-radius: 4px 4px 0 0;
+  }
+  .gate-headline {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 0.03em;
+    color: var(--off-white);
+    margin-bottom: 12px;
+  }
+  .gate-sub {
+    font-size: 15px;
+    color: var(--off-white);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    max-width: 560px;
+  }
+  .gate-email-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  /* QUESTIONS WRAP */
+  .questions-wrap { display: block; }
+  .questions-wrap.hidden { display: none; }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 36px 0 28px;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .section-divider-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* INTRO SCREEN */
+  .intro-wrap { display: block; }
+  .intro-wrap.hidden { display: none; }
+  .intro-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+  .intro-card-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+    color: var(--off-white);
+  }
+  .intro-card-text {
+    font-size: 14px;
+    color: var(--off-white);
+    line-height: 1.65;
+  }
+  .intro-cards { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin: 28px 0; }
+  @media (max-width: 520px) { .intro-cards { grid-template-columns: 1fr; } }
+  .start-btn {
+    width: 100%;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+    margin-top: 8px;
+  }
+  .start-btn:hover { background: #c94040; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeUp 0.4s ease forwards; }
+
+  /* Warning if no answer selected */
+  .answer-warning {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--amber);
+    margin-top: 12px;
+  }
+  .answer-warning.visible { display: block; }
+
+</style>
+</head>
+<body>
+<div class="scorecard-wrap">
+
+  <!-- HEADER -->
+  <div class="sc-header">
+    <div class="sc-eyebrow">Breaking The Loop Co.</div>
+    <h1 class="sc-title">Structural Performance<br><span>Scorecard</span></h1>
+    <p class="sc-subtitle">16 questions. 8 minutes. A scored output that tells you whether your performance problem is structural and which loop is active in your operation.</p>
+    <div class="sc-meta">
+      <span class="sc-meta-item"><strong>16</strong> questions</span>
+      <span class="sc-meta-item"><strong>3</strong> structural loops assessed</span>
+      <span class="sc-meta-item"><strong>Free</strong> · no login required</span>
+    </div>
+  </div>
+
+  <!-- INTRO SCREEN -->
+  <div class="intro-wrap" id="introWrap">
+    <p style="font-size:16px; color: rgba(244,242,238,0.9); line-height:1.8; margin-bottom:20px;">
+      You have tried the obvious things. More coaching. Tighter targets. Better reporting. A new framework. And yet here you are. The numbers move briefly and drift back. The same conversations happen in every review meeting. The pressure keeps building and the explanation keeps being the same: the people.
+    </p>
+    <p style="font-size:16px; color: rgba(244,242,238,0.9); line-height:1.8; margin-bottom:20px;">
+      What if it is not the people?
+    </p>
+    <p style="font-size:15px; color: var(--off-white); line-height:1.75; margin-bottom:32px;">
+      This scorecard assesses three structural failure patterns that are invisible to standard performance management but are actively running in most contact centre operations under pressure. Answer based on what is actually happening. Not what you are aiming for. Not what your reporting says. What you actually see.
+    </p>
+    <div class="intro-cards">
+      <div class="intro-card">
+        <div class="intro-card-title" style="color: var(--red);">Loop 1</div>
+        <div class="intro-card-text">Your best agents are being punished for a problem the system created. AHT targets are compressing resolution and your operation is drowning in the callbacks it generates.</div>
+      </div>
+      <div class="intro-card">
+        <div class="intro-card-title" style="color: var(--amber);">Loop 2</div>
+        <div class="intro-card-text">CSAT looks fine. Complaints are rising. Someone sends a monthly report suggesting you improve communication. Nobody knows what that means. Nothing changes.</div>
+      </div>
+      <div class="intro-card">
+        <div class="intro-card-title" style="color: var(--teal);">Loop 3</div>
+        <div class="intro-card-text">You have coached the same problem dozens of times. It improves. It slides back. You book another session. You already know, before you walk in, that it probably will not stick this time either.</div>
+      </div>
+      <div class="intro-card" style="background: rgba(244,242,238,0.02); border-color: rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center;">
+        <div style="text-align:center; padding: 8px;">
+          <div style="font-size:22px; margin-bottom:10px;">&#8595;</div>
+          <div style="font-size:13px; color:rgba(244,242,238,0.5); line-height:1.6;">If any of those felt familiar, this scorecard will tell you which loop is running and how hard.</div>
+        </div>
+      </div>
+    </div>
+    <button class="start-btn" id="startBtn">Start the Scorecard &#8594;</button>
+    <p style="text-align:center; font-family: var(--font-mono); font-size:11px; color: var(--muted); margin-top:14px; letter-spacing:0.06em;">16 QUESTIONS &middot; 8 MINUTES &middot; NO LOGIN REQUIRED</p>
+  </div>
+
+  <!-- QUESTIONS WRAP -->
+  <div class="questions-wrap hidden" id="questionsWrap">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">Question 1 of 16</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="questionsContainer"></div>
+    <div class="answer-warning" id="answerWarning">Please select an answer before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="prevBtn">&#8592; Back</button>
+      <button class="btn btn-primary" id="nextBtn">Continue &#8594;</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-wrap" id="resultsWrap">
+    <!-- ABOVE THE GATE: always visible -->
+    <div class="results-header">
+      <div class="results-eyebrow">Diagnostic Complete</div>
+      <div class="dominant-loop" id="dominantLoopHeadline"></div>
+      <p class="dominant-diagnosis" id="dominantDiagnosis"></p>
+      <div class="mechanism-box">
+        <div class="mechanism-label">The mechanism driving this</div>
+        <div class="mechanism-text" id="mechanismText"></div>
+      </div>
+    </div>
+    <div class="score-bars">
+      <div class="score-bars-title">Risk Level Across All Three Loops</div>
+      <div class="score-bar-row">
+        <div class="score-bar-meta">
+          <span class="score-bar-label">Loop 1 &ndash; AHT &amp; Repeat Demand <small id="loop1RiskTag"></small></span>
+          <span class="score-bar-value" id="loop1Score"></span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill loop1" id="loop1Bar"></div></div>
+      </div>
+      <div class="score-bar-row">
+        <div class="score-bar-meta">
+          <span class="score-bar-label">Loop 2 &ndash; CSAT &amp; Complaints <small id="loop2RiskTag"></small></span>
+          <span class="score-bar-value" id="loop2Score"></span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill loop2" id="loop2Bar"></div></div>
+      </div>
+      <div class="score-bar-row">
+        <div class="score-bar-meta">
+          <span class="score-bar-label">Loop 3 &ndash; Coaching &amp; Performance <small id="loop3RiskTag"></small></span>
+          <span class="score-bar-value" id="loop3Score"></span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill loop3" id="loop3Bar"></div></div>
+      </div>
+    </div>
+
+    <!-- EMAIL GATE -->
+    <div class="email-gate" id="emailGate">
+      <div class="gate-headline">Your full breakdown is ready</div>
+      <p class="gate-sub">What each score means for your operation, what your data is actually telling you, and the specific intervention built to address your dominant pattern. Enter your email and it unlocks instantly. We will also send you a copy to keep.</p>
+      <div class="gate-email-row" id="gateEmailRow">
+        <div class="email-input-wrap">
+          <label class="email-input-label" for="emailInput">Work email address</label>
+          <input type="email" class="email-input" id="emailInput" placeholder="you@yourcompany.com">
+        </div>
+        <button class="btn-send" id="sendBtn">Unlock My Report &#8594;</button>
+      </div>
+      <div class="email-sent-msg" id="emailSentMsg">
+        <span>&#10003;</span> Sent. A copy is on its way to your inbox.
+      </div>
+      <div class="email-skip">
+        <a id="skipLink">Skip, just show me the results without saving them</a>
+      </div>
+    </div>
+
+    <!-- BELOW THE GATE: locked until email submitted or skipped -->
+    <div class="results-detail hidden" id="resultsDetail">
+      <div class="findings-section">
+        <div class="findings-title">What Your Score Is Telling You</div>
+        <div id="findingsContent"></div>
+      </div>
+      <div class="gap-box">
+        <div class="gap-box-title">What This Scorecard Cannot Tell You</div>
+        <div class="gap-box-text" id="gapText"></div>
+      </div>
+      <div class="cta-section" id="ctaSection"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+
+  // ── OPENING SYMPTOM QUESTION (loop: 0 = cross-loop, scored across all three)
+  {
+    id: 0, loop: 0,
+    text: "Before we get into the specifics, pick the statement that most accurately describes how performance pressure feels inside your operation right now.",
+    options: [
+      { label: "We push harder, the team works harder, but the volume keeps coming back. We can't get ahead of it no matter what we do.", score: [3,1,1] },
+      { label: "Our scores look fine on paper but something is clearly wrong. Complaints are climbing and I can't reconcile that with what the data is telling me.", score: [1,4,1] },
+      { label: "I know my team. I know they are capable. But the performance just won't move, and I'm running out of ways to explain why to the people above me.", score: [1,1,4] },
+      { label: "All of the above, in different degrees, at different times. It depends on the week.", score: [2,2,2] },
+    ]
+  },
+
+  // ── LOOP 1, AHT & Repeat Demand (Q2–Q6)
+  {
+    id: 1, loop: 1,
+    text: "Think about your best agents, the ones with strong CSAT, low escalations, customers who ask for them by name. Are any of them regularly flagged for AHT that is too high?",
+    options: [
+      { label: "No. Our top performers consistently hit AHT targets alongside their quality scores", score: 1 },
+      { label: "Occasionally, there is some tension but it is not a defining feature of how we manage them", score: 2 },
+      { label: "Yes. Some of our best people are regularly in conversations about their handle time despite strong everything else", score: 4 },
+      { label: "We do not have enough visibility across those dimensions to know for certain", score: 3 },
+    ]
+  },
+  {
+    id: 2, loop: 1,
+    text: "You push AHT down. Two or three weeks later, what happens to your contact volume?",
+    options: [
+      { label: "It stays down or keeps falling, shorter calls mean fewer calls overall", score: 1 },
+      { label: "It holds steady, AHT and volume seem to move independently", score: 2 },
+      { label: "It creeps back up. We improve efficiency and then somehow we are just as busy as before.", score: 4 },
+      { label: "We have never specifically tracked whether AHT reduction affects what comes in afterwards", score: 2 },
+    ]
+  },
+  {
+    id: 3, loop: 1,
+    text: "When a call closes inside your AHT target, how confident are you the customer's issue was actually resolved, not just that the conversation ended?",
+    options: [
+      { label: "Very confident, we have FCR data above 80% and it is consistently validated", score: 1 },
+      { label: "Reasonably confident, FCR is tracked but we know the measurement has gaps", score: 2 },
+      { label: "Honestly, not very. We suspect calls are closing before full resolution but it is difficult to prove internally", score: 4 },
+      { label: "We do not track First Contact Resolution in a meaningful way", score: 2 },
+    ]
+  },
+  {
+    id: 4, loop: 1,
+    text: "When volume spikes and nobody can explain why, what is the most common story your operation tells itself?",
+    options: [
+      { label: "Seasonal. External. Something outside our control.", score: 1 },
+      { label: "A process or system change upstream generated new contacts", score: 2 },
+      { label: "Customers calling back about something that was not sorted the first time", score: 4 },
+      { label: "We investigate after the spike, the cause is usually unclear while it is happening", score: 3 },
+    ]
+  },
+  {
+    id: 5, loop: 1,
+    text: "When an agent needs to resolve a contact, do they have the authority, the system access, and the process clarity to do it end to end without escalating, transferring, or calling back?",
+    options: [
+      { label: "Yes, most agents can resolve most contact types fully in one interaction", score: 1 },
+      { label: "Mostly, but escalation is genuinely required in around 20 to 30% of cases", score: 2 },
+      { label: "No. Escalations and callbacks are a standard part of how we handle a large proportion of contacts", score: 4 },
+      { label: "It depends heavily on how long the agent has been here and what type of contact it is", score: 3 },
+    ]
+  },
+
+  // ── LOOP 2, CSAT & Complaints (Q7–Q11)
+  {
+    id: 6, loop: 2,
+    text: "The last time complaint volumes rose, what did your customer experience or insight team recommend as the fix?",
+    options: [
+      { label: "A specific, evidence-based change to a process, policy, or upstream demand category", score: 1 },
+      { label: "Improved complaint handling, better resolution quality for complaints that arrive", score: 2 },
+      { label: "Something vague. Better communication. More empathy. Improved tone. Nothing you could operationalise.", score: 4 },
+      { label: "The analysis has not reached a recommendation stage yet", score: 2 },
+    ]
+  },
+  {
+    id: 7, loop: 2,
+    text: "Your CSAT scores and your complaint volumes, over the last six months, which of these is true?",
+    options: [
+      { label: "Both moving in the same direction, when satisfaction improves, complaints drop too", score: 1 },
+      { label: "CSAT is broadly stable but complaints are slowly climbing", score: 3 },
+      { label: "CSAT looks healthy or is improving while complaints are clearly rising. The two signals are contradicting each other.", score: 4 },
+      { label: "We do not have reliable, comparable data across both in the same period", score: 2 },
+    ]
+  },
+  {
+    id: 8, loop: 2,
+    text: "Your CSAT survey fires after a call ends. What is it actually measuring?",
+    options: [
+      { label: "Whether the customer's issue was resolved, we ask specifically about resolution outcome", score: 1 },
+      { label: "How the customer felt during the interaction, tone, professionalism, ease of contact", score: 3 },
+      { label: "Essentially the agent's manner. We measure the conversation, not what the conversation produced.", score: 4 },
+      { label: "We are not entirely clear on the relationship between what we measure and what drives complaints", score: 2 },
+    ]
+  },
+  {
+    id: 9, loop: 2,
+    text: "Of your complaint volume, how much of it started as a normal service contact that was never properly resolved?",
+    options: [
+      { label: "Very little, most complaints arrive as complaints from the first interaction", score: 1 },
+      { label: "Some, there is a pathway from service contact to complaint but it is not dominant", score: 2 },
+      { label: "A significant share, we can see complaints that were once service contacts, but the data sits in separate systems", score: 4 },
+      { label: "We have not mapped the journey from service contact to complaint formally", score: 3 },
+    ]
+  },
+  {
+    id: 10, loop: 2,
+    text: "Can you name, right now, without looking anything up, the top three contact types that generate a disproportionate share of your complaints?",
+    options: [
+      { label: "Yes, and we know why each one generates complaints and what the fix would require", score: 1 },
+      { label: "Broadly yes, we have a general sense, but not with enough precision to act on it confidently", score: 2 },
+      { label: "Not really. Complaint data and operational contact data live in separate systems and we rarely connect them", score: 4 },
+      { label: "We analyse complaints case by case, we do not aggregate patterns across categories", score: 2 },
+    ]
+  },
+
+  // ── LOOP 3, Coaching & Performance (Q12–Q16)
+  {
+    id: 11, loop: 3,
+    text: "Be honest: when you walk into a coaching session with someone who has been underperforming for more than three months, do you believe this session will change that?",
+    options: [
+      { label: "Yes, I go in with genuine confidence that the right conversation produces real change", score: 1 },
+      { label: "Sometimes, it depends on the person and the issue", score: 2 },
+      { label: "If I am honest, not really. I go through the process because it is the process. I stopped expecting it to break the pattern.", score: 4 },
+      { label: "I have lost count of how many sessions we have had about the same things. I do not know what else to try.", score: 3 },
+    ]
+  },
+  {
+    id: 12, loop: 3,
+    text: "When coaching does produce an improvement, how long does it typically last?",
+    options: [
+      { label: "It sticks. We see genuine, sustained change that holds across the following observation periods.", score: 1 },
+      { label: "A few weeks, then a gradual drift back toward where it was", score: 3 },
+      { label: "Just long enough to get through the next observation. Then it slides back, sometimes to exactly the same level.", score: 4 },
+      { label: "Coaching has not produced a clear, attributable performance movement that I would stand behind", score: 4 },
+    ]
+  },
+  {
+    id: 13, loop: 3,
+    text: "Your top performing agents and your struggling agents, if you removed the individual and looked only at the conditions they work in, how different are those conditions?",
+    options: [
+      { label: "Very similar. Top performers and struggling performers work inside the same conditions", score: 3 },
+      { label: "Somewhat different. Top performers tend to have better access to information or have found workarounds", score: 2 },
+      { label: "Quite different. Top performers have more authority, better system access, or tenure that gives them workarounds others do not have", score: 4 },
+      { label: "Mostly skill-driven, our top performers are genuinely more capable in ways we can observe", score: 1 },
+    ]
+  },
+  {
+    id: 14, loop: 3,
+    text: "When an agent consistently underperforms and the coaching is not working, what does your operation do next?",
+    options: [
+      { label: "We stop and look at the structural conditions, what in the process, system, or authority design is the actual constraint", score: 1 },
+      { label: "We review calls and coaching history more carefully to find the skill or knowledge gap we have missed", score: 2 },
+      { label: "Performance improvement plan. More observation. Increased frequency. Escalation of the same approach.", score: 4 },
+      { label: "We follow the standard framework. The process does not really allow for structural investigation", score: 2 },
+    ]
+  },
+  {
+    id: 15, loop: 3,
+    text: "Right now, do your agents have everything they need at the point of contact to resolve the most common call reasons without putting the customer on hold, escalating, or promising a callback?",
+    options: [
+      { label: "Yes, the information, access, and authority are there in the majority of cases", score: 1 },
+      { label: "Mostly, but certain contact types routinely require escalation regardless of the agent's skill level", score: 2 },
+      { label: "No, there are consistent gaps in what agents can access, decide, or action without going elsewhere", score: 4 },
+      { label: "Some agents navigate the gaps. Others cannot. The system rewards length of service, not capability.", score: 3 },
+    ]
+  },
+];
+
+const loopResults = {
+  1: {
+    headline: 'Your Dominant Loop:<br><span class="loop-name">You Are Punishing Your Best People For a Problem The System Created</span>',
+    diagnosis: "Your operation has an AHT target. Your agents know it. And some of them, probably the ones customers actually want to speak to, are regularly in conversations about their handle time despite having the CSAT scores, the low escalations, and the repeat contacts to prove they are doing the job properly. The system is penalising resolution in favour of speed. And then it wonders why customers keep calling back.",
+    mechanism: "AHT targets compress the time available to actually fix things. Calls close. Issues do not. Customers call back. Volume climbs. Pressure increases. Targets tighten. The people who try to do the job properly get flagged. The loop runs faster. The operation works harder and falls further behind, and nobody in a review meeting can explain why.",
+    findings: [
+      { icon: "↻", text: "<strong>The repeat demand is not a people problem. It is a design problem.</strong> Agents are not cutting corners because they are lazy or careless. They are cutting corners because the system gives them no other option inside the time they have been allocated. The constraint is structural. The consequences land on the individual." },
+      { icon: "⚠", text: "<strong>Your FCR measure is almost certainly undercounting the real leak.</strong> Most First Contact Resolution measures only capture repeat contacts within seven days on the same channel. Same-issue callbacks on different channels, contacts handled by different agents, issues that resurface after ten days, none of that typically shows up. The structural leak is wider than your current reporting suggests." },
+      { icon: "▲", text: "<strong>Pushing AHT harder will accelerate the problem, not solve it.</strong> Every incremental reduction in handle time without addressing resolution authority and process access creates more deferred demand. The operation is not becoming more efficient. It is becoming more efficient at generating future workload." },
+    ],
+    gap: "Your scores tell you Loop 1 is active. What they cannot tell you is exactly where resolution is breaking down, which contact categories, which process steps, which authority gaps are generating the most recurrence. That requires a structured evidence review across specific demand categories with your own data. That is precisely what the AHT Loop Intervention is designed to do, and it runs inside your own team, without external consultants, in 10 to 14 weeks.",
+    ctaHeadline: "The AHT Loop Intervention",
+    ctaBody: "A structured 10–14 week intervention that identifies the specific structural constraint generating repeat demand in your operation, and gives you the evidence to fix it and prove you fixed it. Self-directed. Runs inside your own team. CA$397.",
+    ctaLink: "https://www.breakingtheloopco.com/reduce-repeat-contacts-contact-centre",
+    ctaLabel: "Access the Intervention →",
+    secondaryLink: "https://www.breakingtheloopco.com/find-your-loop",
+    secondaryLabel: "Take the full four-question diagnostic",
+  },
+  2: {
+    headline: 'Your Dominant Loop:<br><span class="loop-name" style="color:var(--amber)">"Improve Communication." You Stare At The Report. You Already Knew That.</span>',
+    diagnosis: "CSAT looks fine. Complaints are rising. Somewhere in your organisation, a customer experience or insight team sends a monthly report. It identifies themes. It recommends improvements. The improvements are things like 'improve communication' or 'enhance empathy' or 'set clearer expectations.' You read it. You already knew that. Everyone already knows that. Nobody knows what it actually means or where to start.",
+    mechanism: "CSAT measures how the customer felt at the end of a call, tone, professionalism, whether the agent was polite. It does not measure whether the issue was resolved. It does not measure whether the promise made on that call was delivered. It does not measure what happened over the two weeks after the call ended. Complaints measure those things. When CSAT holds steady while complaints rise, the operation has optimised the interaction and failed the outcome, and the reporting structure makes it nearly impossible to see that clearly.",
+    findings: [
+      { icon: "⚖", text: "<strong>CSAT and complaints are not measuring the same thing. Treating them as competing signals is the mistake.</strong> One measures how the conversation felt. The other measures whether the problem was actually fixed. Running them as if they should move together, and being confused when they do not, is what keeps the loop invisible." },
+      { icon: "→", text: "<strong>Most of your complaints started as service contacts.</strong> A customer contacted you. Something was not resolved, not delivered, not communicated clearly enough. They contacted you again, as a complaint this time. That journey is predictable, traceable, and preventable. But it requires connecting data sets that most operations keep in entirely separate systems." },
+      { icon: "↓", text: "<strong>Training agents to handle complaints better does not reduce complaint volume.</strong> It makes individual cases better managed. The source, the process failure, the unresolved contact, the broken promise upstream, keeps producing new complaints at the same rate. Better complaint handling is a band-aid. The intervention addresses the source." },
+    ],
+    gap: "Your scores confirm Loop 2 is active. What they cannot tell you is which specific demand categories are generating the most complaint conversion, where the gap between your CSAT and complaint data is widest, or what the upstream failure actually is. That requires mapping both data sets against each other across specific contact types. That analysis is the core of the Complaints Intervention, and it produces a finding you can take to any leadership meeting.",
+    ctaHeadline: "The Complaints & CSAT Intervention",
+    ctaBody: "A structured intervention that maps the gap between your CSAT and complaint data, identifies which demand categories are generating complaint conversion, and gives you a controlled pilot to close the source, not just manage the symptom. CA$397.",
+    ctaLink: "https://www.breakingtheloopco.com/operational-intervention-framework",
+    ctaLabel: "Access the Intervention →",
+    secondaryLink: "https://www.breakingtheloopco.com/find-your-loop",
+    secondaryLabel: "Take the full four-question diagnostic",
+  },
+  3: {
+    headline: 'Your Dominant Loop:<br><span class="loop-name" style="color:var(--teal)">You Have Coached This Exact Problem Before. It Did Not Stick Then Either.</span>',
+    diagnosis: "You have coached this person, or this pattern, before. You documented it. You followed the framework. There was a brief improvement. Then, somewhere around week three or four, the numbers drifted back to where they were. You booked another session. Somewhere in the back of your mind, before you even walk in, you already know this one probably will not stick either. That feeling is not pessimism. It is pattern recognition. The constraint is not the person. It is the system they are operating inside.",
+    mechanism: "Coaching addresses skill and behaviour. It cannot address the conditions that make skill and behaviour insufficient. When agents lack the system access, decision authority, or process clarity to resolve contacts fully, coaching them to do it better changes nothing. The ceiling is structural. Coaching can temporarily raise people toward it. The ceiling does not move. They slide back. The cycle repeats. Hundreds of hours of coaching investment produce the appearance of activity and very little sustained change.",
+    findings: [
+      { icon: "⚙", text: "<strong>Your top performers are navigating the system. They are not outperforming it.</strong> In structurally constrained operations, top performers are almost always the ones who have worked out the workarounds, who to call, which system to use, how to get something done despite the process. The performance gap between your best and worst agents is not primarily a capability gap. It is an adaptation gap. And you cannot coach adaptation, you can only create the conditions that make it unnecessary." },
+      { icon: "↻", text: "<strong>Coaching is holding a floor, not raising a ceiling.</strong> If your coaching programme disappeared tomorrow and performance did not dramatically change, it is performing a maintenance function, not a development one. The ceiling is set by structural constraints that coaching cannot reach. The intervention finds those constraints and changes them." },
+      { icon: "▲", text: "<strong>Performance improvement plans applied to structural problems damage trust without producing change.</strong> A PIP tells an agent their performance is their responsibility. In a structurally constrained operation, that is not accurate. The agent is doing what the system allows. Holding them accountable for the system's limitations produces short-term compliance, long-term disengagement, and exactly the same performance problem three months later." },
+    ],
+    gap: "Your scores confirm Loop 3 is active. What they cannot tell you is exactly which structural constraints are creating the performance ceiling, whether it is decision authority, information access, process gaps, escalation design, or some combination. That requires a structured evidence review of a specific agent cohort against the conditions they are working inside. That evidence review is the foundation of the Coaching Paradox Intervention.",
+    ctaHeadline: "The Coaching Paradox Intervention",
+    ctaBody: "A structured intervention that separates genuine capability gaps from structural constraints, gives you the evidence to make the case for system-level change, and builds a performance model that actually holds, because it addresses what coaching cannot reach. CA$397.",
+    ctaLink: "https://www.breakingtheloopco.com/operational-intervention-framework",
+    ctaLabel: "Access the Intervention →",
+    secondaryLink: "https://www.breakingtheloopco.com/find-your-loop",
+    secondaryLabel: "Take the full four-question diagnostic",
+  },
+};
+
+// STATE
+var current = 0;
+var answers = {};
+
+// INIT - attach all event listeners after DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('startBtn').addEventListener('click', startScorecard);
+  document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+  document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+  document.getElementById('sendBtn').addEventListener('click', sendResults);
+  document.getElementById('skipLink').addEventListener('click', skipEmail);
+  document.getElementById('prevBtn').style.display = 'none';
+});
+
+function startScorecard() {
+  document.getElementById('introWrap').classList.add('hidden');
+  document.getElementById('questionsWrap').classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q = questions[current];
+  var container = document.getElementById('questionsContainer');
+  var loopLabels = { 0: '', 1: 'Loop 1 - AHT and Repeat Demand', 2: 'Loop 2 - CSAT and Complaints', 3: 'Loop 3 - Coaching and Performance' };
+  var loopClass  = { 0: '', 1: 'loop1', 2: 'loop2', 3: 'loop3' };
+  var showSection = q.loop !== 0 && (current === 0 || questions[current - 1].loop !== q.loop);
+
+  var sectionHTML = '';
+  if (showSection) {
+    sectionHTML = '<div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">' + loopLabels[q.loop] + '</div><div class="section-divider-line"></div></div><div class="section-label ' + loopClass[q.loop] + '">' + loopLabels[q.loop] + '</div>';
+  }
+
+  var letters = ['A','B','C','D'];
+  var optionsHTML = '';
+  for (var i = 0; i < q.options.length; i++) {
+    var sel = answers[current] === i ? 'selected' : '';
+    optionsHTML += '<button class="option-btn ' + sel + '" data-index="' + i + '"><span class="opt-marker">' + letters[i] + '</span><span>' + q.options[i].label + '</span></button>';
+  }
+
+  container.innerHTML = '<div class="animate-in">' + sectionHTML + '<div class="question-block"><div class="question-number">Question ' + (current + 1) + ' of ' + questions.length + '</div><div class="question-text">' + q.text + '</div><div class="options-grid">' + optionsHTML + '</div></div></div>';
+
+  // Attach option click handlers
+  var btns = container.querySelectorAll('.option-btn');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].addEventListener('click', function() {
+      var idx = parseInt(this.getAttribute('data-index'));
+      selectAnswer(idx);
+    });
+  }
+
+  updateProgress();
+  document.getElementById('prevBtn').style.display = current > 0 ? 'inline-block' : 'none';
+  document.getElementById('nextBtn').textContent = current === questions.length - 1 ? 'See My Results' : 'Continue';
+  document.getElementById('answerWarning').classList.remove('visible');
+}
+
+function selectAnswer(idx) {
+  answers[current] = idx;
+  var btns = document.querySelectorAll('.option-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('selected', i === idx);
+  }
+  document.getElementById('answerWarning').classList.remove('visible');
+}
+
+function nextQuestion() {
+  if (answers[current] === undefined) {
+    document.getElementById('answerWarning').classList.add('visible');
+    return;
+  }
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+}
+
+function updateProgress() {
+  var pct = Math.round((current / questions.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = 'Question ' + (current + 1) + ' of ' + questions.length;
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+function calcScores() {
+  var s = { 1: 0, 2: 0, 3: 0 };
+  // Max per loop = 5 questions x 4 max score + max cross-loop contribution (4)
+  var max = (5 * 4) + 4;
+  for (var i = 0; i < questions.length; i++) {
+    if (answers[i] === undefined) continue;
+    var q = questions[i];
+    var opt = q.options[answers[i]];
+    if (q.loop === 0) {
+      s[1] += opt.score[0];
+      s[2] += opt.score[1];
+      s[3] += opt.score[2];
+    } else {
+      s[q.loop] += opt.score;
+    }
+  }
+  return {
+    1: Math.min(100, Math.round((s[1] / max) * 100)),
+    2: Math.min(100, Math.round((s[2] / max) * 100)),
+    3: Math.min(100, Math.round((s[3] / max) * 100))
+  };
+}
+
+function getRiskTag(pct) {
+  if (pct >= 65) return { label: 'High Risk', cls: 'risk-high' };
+  if (pct >= 40) return { label: 'Moderate Risk', cls: 'risk-mid' };
+  return { label: 'Lower Risk', cls: 'risk-low' };
+}
+
+function showResults() {
+  document.getElementById('questionsWrap').classList.add('hidden');
+  document.getElementById('resultsWrap').classList.add('visible');
+
+  var pcts = calcScores();
+  var dominant = '1';
+  if (pcts[2] > pcts[dominant]) dominant = '2';
+  if (pcts[3] > pcts[dominant]) dominant = '3';
+
+  var result = loopResults[dominant];
+
+  document.getElementById('dominantLoopHeadline').innerHTML = result.headline;
+  document.getElementById('dominantDiagnosis').textContent = result.diagnosis;
+  document.getElementById('mechanismText').textContent = result.mechanism;
+
+  setTimeout(function() {
+    [1,2,3].forEach(function(loop) {
+      var pct = pcts[loop];
+      var risk = getRiskTag(pct);
+      document.getElementById('loop' + loop + 'Bar').style.width = pct + '%';
+      document.getElementById('loop' + loop + 'Score').textContent = pct + '% risk';
+      document.getElementById('loop' + loop + 'RiskTag').innerHTML = '<span class="risk-tag ' + risk.cls + '">' + risk.label + '</span>';
+    });
+  }, 100);
+
+  var findingsHTML = '';
+  for (var f = 0; f < result.findings.length; f++) {
+    findingsHTML += '<div class="finding-item"><div class="finding-icon">' + result.findings[f].icon + '</div><div class="finding-text">' + result.findings[f].text + '</div></div>';
+  }
+  document.getElementById('findingsContent').innerHTML = findingsHTML;
+  document.getElementById('gapText').textContent = result.gap;
+
+  document.getElementById('ctaSection').innerHTML = '<div class="cta-label">Recommended Next Step</div><div class="cta-headline">' + result.ctaHeadline + '</div><p class="cta-body">' + result.ctaBody + '</p><div class="cta-buttons"><a href="' + result.ctaLink + '" class="btn-cta-primary" target="_blank">' + result.ctaLabel + '</a><a href="' + result.secondaryLink + '" class="btn-cta-secondary" target="_blank">' + result.secondaryLabel + '</a></div>';
+
+  window._dominantLoop = dominant;
+  window._scorePcts = pcts;
+  window.scrollTo(0, 0);
+}
+
+function unlockDetail() {
+  var gate = document.getElementById('emailGate');
+  var detail = document.getElementById('resultsDetail');
+  gate.style.display = 'none';
+  detail.classList.remove('hidden');
+  detail.classList.add('unlocking');
+  // Smooth scroll to the revealed content
+  setTimeout(function() {
+    detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function skipEmail() {
+  unlockDetail();
+}
+
+function sendResults() {
+  var email = document.getElementById('emailInput').value.trim();
+  if (!email || email.indexOf('@') === -1) {
+    document.getElementById('emailInput').style.borderColor = 'var(--red)';
+    return;
+  }
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('sendBtn').textContent = 'Sending...';
+
+  var dominant = window._dominantLoop || '1';
+  var pcts = window._scorePcts || { 1: 0, 2: 0, 3: 0 };
+  var loopNames = {
+    '1': 'Loop 1 - AHT and Repeat Demand',
+    '2': 'Loop 2 - CSAT and Complaints',
+    '3': 'Loop 3 - Coaching and Performance'
+  };
+  var diagnosisParagraphs = {
+    '1': 'Your operation is likely generating its own contact volume. Speed targets are compressing the time agents have to actually resolve contacts and customers are calling back because their issues were not fixed the first time. Your best people may already be getting flagged for AHT despite strong CSAT and low escalations. That is the system penalising resolution in favour of speed.',
+    '2': 'Your satisfaction data and your complaint volumes are telling you different stories and the gap between them is where your operation is actually failing. CSAT measures how the conversation felt. Complaints measure whether the problem was actually fixed. When one holds steady while the other climbs, the operation has optimised the interaction and failed the outcome. Someone is probably sending monthly reports with recommendations like improve communication. Nobody knows what that means. Nothing changes.',
+    '3': 'You have coached the same problem before. It improved briefly and then returned to where it was. The issue is not the person. It is the system they are operating inside. When agents lack the authority, information access, or process clarity to resolve contacts fully, coaching them to do it better changes nothing. The ceiling is structural. Coaching can push people toward it temporarily. It does not move.'
+  };
+  var interventionPitches = {
+    '1': 'The AHT Loop Intervention identifies exactly where resolution is breaking down in your operation, which contact categories, which process steps, which authority gaps. It runs inside your own team in 10 to 14 weeks. No external consultants. CA$397. Access it here: https://www.breakingtheloopco.com/reduce-repeat-contacts-contact-centre',
+    '2': 'The Complaints Intervention maps the gap between your CSAT and complaint data, identifies which contact types are generating complaint conversion, and gives you something specific enough to act on. CA$397. Access it here: https://www.breakingtheloopco.com/operational-intervention-framework',
+    '3': 'The Coaching Paradox Intervention separates genuine capability gaps from structural constraints, gives you the evidence to make the case for system-level change, and builds a performance model that actually holds. CA$397. Access it here: https://www.breakingtheloopco.com/operational-intervention-framework'
+  };
+
+  emailjs.send(
+    'service_ysfiv5b',
+    'template_wahdh58',
+    {
+      user_email: email,
+      dominant_loop: loopNames[dominant],
+      loop1_score: pcts[1] + '% risk',
+      loop2_score: pcts[2] + '% risk',
+      loop3_score: pcts[3] + '% risk',
+      diagnosis_paragraph: diagnosisParagraphs[dominant],
+      intervention_pitch: interventionPitches[dominant]
+    },
+    'wj8nPx4__Z6qn8zzx'
+  ).then(function() {
+    console.log('Notification sent successfully');
+  }, function(error) {
+    console.log('Notification send failed:', error);
+  });
+
+  // Send personalised report to the person
+  emailjs.send(
+    'service_ysfiv5b',
+    'template_kqf6yee',
+    {
+      user_email: email,
+      dominant_loop: loopNames[dominant],
+      loop1_score: pcts[1] + '% risk',
+      loop2_score: pcts[2] + '% risk',
+      loop3_score: pcts[3] + '% risk',
+      diagnosis_paragraph: diagnosisParagraphs[dominant],
+      intervention_pitch: interventionPitches[dominant]
+    },
+    'wj8nPx4__Z6qn8zzx'
+  ).then(function() {
+    console.log('Report sent to user successfully');
+  }, function(error) {
+    console.log('Report send failed:', error);
+  });
+
+  // Show sent confirmation inside the gate
+  document.getElementById('gateEmailRow').style.display = 'none';
+  document.getElementById('emailSentMsg').classList.add('visible');
+  document.querySelector('.email-skip').style.display = 'none';
+
+  // Unlock the detail section after brief confirmation moment
+  setTimeout(function() {
+    unlockDetail();
+  }, 1200);
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('wj8nPx4__Z6qn8zzx');
+</script>
+<script>
+  // Report height to parent Wix page so iFrame resizes dynamically
+  function reportHeight() {
+    var height = document.body.scrollHeight;
+    window.parent.postMessage({ type: 'iframeHeight', height: height }, '*');
+  }
+  // Report on load and whenever DOM changes
+  window.addEventListener('load', reportHeight);
+  var observer = new MutationObserver(reportHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  // Also report periodically as a fallback
+  setInterval(reportHeight, 500);
+</script>
+
+</body>
+</html>
